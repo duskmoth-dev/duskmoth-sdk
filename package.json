@@ -1,0 +1,39 @@
+{
+  "name": "@duskmoth-dev/sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "Dependency-free Duskmoth API client. Does not sign or submit transactions.",
+  "license": "MIT",
+  "author": {
+    "name": "Duskmoth",
+    "email": "hello@duskmoth.xyz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duskmoth-dev/duskmoth-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/duskmoth-dev/duskmoth-sdk/issues"
+  },
+  "homepage": "https://duskmoth.xyz",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
+  ]
+}
