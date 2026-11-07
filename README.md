@@ -1,36 +1,112 @@
 # Duskmoth SDK
 
-A small, dependency-free JavaScript client for the Duskmoth HTTP API.
-It is **not** a cryptographic SDK, a Privacy Cash replacement, or a wallet-signing library.
-It does not deposit, withdraw, sign, broadcast, or automatically execute AI intents.
+Dependency-free JavaScript/TypeScript HTTP client for Duskmoth on Solana.
+Version **0.2.0** adds Moth Pass issuance/redemption, AI Pack plans, and Private Payroll authorization.
 
-## Install the GitHub release package
+This is **not** a cryptographic SDK, a Privacy Cash replacement, or a wallet-signing library.
+It never burns tokens, signs messages, deposits, withdraws, broadcasts transactions, or executes payroll.
+However, its premium POST methods **can consume existing Moth Passes**. Use them only after user approval.
 
-Download `duskmoth-dev-sdk-0.1.0.tgz` from this repository's GitHub Releases and verify its SHA-256 against the release checksum.
+## Install from GitHub Releases
+
+Download `duskmoth-dev-sdk-0.2.0.tgz` and `duskmoth-sdk-0.2.0-SHA256SUMS.txt` from
+[v0.2.0](https://github.com/duskmoth-dev/duskmoth-sdk/releases/tag/v0.2.0).
+Verify the archive before installing:
 
 ```sh
-npm install ./duskmoth-dev-sdk-0.1.0.tgz
+sha256sum --ignore-missing -c duskmoth-sdk-0.2.0-SHA256SUMS.txt
+npm install ./duskmoth-dev-sdk-0.2.0.tgz
 ```
 
-No npm registry publication is claimed.
+No npm registry publication is claimed. Requires Node.js 22+ or a modern browser with fetch and AbortSignal.timeout.
+
+## Read configuration
 
 ```js
 import { DuskmothClient } from '@duskmoth-dev/sdk';
+
 const client = new DuskmothClient({ baseUrl: 'https://duskmoth.xyz' });
 const configuration = await client.config();
-const preview = await client.intent('Shield 0.03 SOL');
-// Review only. This client cannot execute the proposed transaction.
+const issuer = await client.passInfo();
+// Read issuer.enabled, issuer.reason, issuer.price, and issuer.features.
+// Availability is not a pass balance or proof of a completed payment.
 ```
 
-Use `config()`, `health()`, `activity(address)`, `screen({sender, recipient})`, `score({address, ts, signature})`, and `relayerConfig()`.
-Score requests require a valid wallet-generated ownership proof; the client does not create one.
-Responses are the server's actual JSON contract, not invented balances or simulated approvals.
-HTTPS is required except for localhost. API/provider credentials must never be supplied to this client.
-The browser origin and API's CORS policy determine browser access; this package does not bypass CORS.
+HTTPS is required except for localhost. An optional base-path prefix is supported.
+Browser access depends on the server's actual CORS policy; the SDK does not bypass it.
+Provider credentials must remain on the server and must never be supplied to this client.
 
-## Development
+## API methods
 
-`npm test` uses unfunded, offline fixtures. Requires Node.js 22+.
+| Method | Endpoint | Effect |
+|---|---|---|
+| `config()` | GET `/api/config` | Read configuration |
+| `health()` | GET `/api/health` | Read service status |
+| `intent(message)` | POST `/api/intent` | Prepare an intent, never execute it |
+| `activity(address)` | POST `/api/activity` | Read public-chain activity |
+| `screen({sender, recipient})` | POST `/api/screen` | Sanctions-only check |
+| `score({address, ts, signature})` | POST `/api/score` | Wallet-owned privacy estimate |
+| `relayerConfig()` | GET `/api/relayer/config` | Read fees and minimums |
+| `passInfo()` | GET `/api/pass/info` | Read issuer and feature configuration |
+| `issuePasses({burnSignature, blinded, proof})` | POST `/api/pass/issue` | Claim blinded signatures for an existing burn |
+| `redeemPass({...pass, feature:'split-withdraw'})` | POST `/api/pass/redeem` | Spend one finalized pass for split-withdraw access |
+| `aiPlan({prompt, pass})` | POST `/api/ai-pack/plan` | Spend one pass to prepare a plan |
+| `authorizePayroll({payments, pass})` | POST `/api/payroll/authorize` | Spend one pass to authorize a bound batch; does not send payments |
 
-Sanctions checks are not full AML screening. Privacy and funded mainnet operation are not guaranteed by this package.
-Contact: hello@duskmoth.xyz.
+Always check configuration for current costs, limits, and availability.
+AI Pack and Payroll use **separate** passes. An AI plan is not a Payroll authorization.
+Server balances, on-chain confirmations, screening, and live fee checks remain required by the executing app.
+There is no invented `runPayroll()` or `privateBalance()` HTTP method.
+
+## Premium requests and recovery
+
+Supply a finalized bearer proof as `{kid, msg, sig, requestId}`. The wallet flow must create and verify it;
+this HTTP SDK does not generate, blind, unblind, or verify passes.
+Generate a cryptographically random 16-byte requestId, encode it as 32 lowercase hexadecimal characters,
+and **save it with the exact request and pass before the first POST**.
+
+```js
+// savedRequest must already be prepared, approved and securely saved by your app.
+// Calling this can spend ONE pass; it does not send a blockchain payment.
+const receipt = await client.aiPlan(savedRequest);
+const draft = receipt.result;
+// Show draft.payments to the user. Payroll is a separate operation with its own pass.
+```
+
+For Payroll, `payments` is an array of `{recipient, amount, token}`, with 1–20 unique addresses,
+one token per batch (`SOL` or `USDC`), and numeric amounts. The backend enforces current configured limits.
+Authorization is bound to the validated batch. Keep the original payment order and amounts for recovery.
+
+See [the full recovery and API guide](docs/premium-api.md) and [the side-effect-free integration example](examples/premium.mjs).
+
+## Timeouts and errors
+
+| Operation | Default |
+|---|---|
+| Ordinary requests | 15 seconds |
+| Screening / pass redemption | 30 seconds |
+| Pass issuance | 60 seconds |
+| AI Pack / Payroll authorization | 90 seconds |
+
+Existing `timeout` configuration still overrides all operations; `timeouts` overrides individual operations:
+
+```js
+const client = new DuskmothClient({
+  baseUrl: 'https://duskmoth.xyz',
+  timeouts: { screen: 30000, aiPlan: 90000 },
+});
+```
+
+`DuskmothError` has `status`, `code`, and optional sanitized `requestId` and numeric `retryAfter` (seconds).
+Codes: `HTTP_ERROR`, `INVALID_JSON`, `TIMEOUT`, `NETWORK_ERROR`.
+Raw provider response bodies are not attached to errors. The client does not log or persist requests and rejects redirects.
+It **never automatically retries** a request. A timeout, invalid JSON or disconnected response does not prove a pass was unspent.
+
+## Development and limits
+
+`npm test` uses unfunded, offline fixtures. Tests do not establish funded mainnet operation or an independent security audit.
+TypeScript declarations cover the premium contracts; existing basic methods retain their unknown response type.
+
+Private transactions do not guarantee anonymity. Scorechain sanctions checks are not full AML screening.
+Use [Duskmoth](https://duskmoth.xyz), [report an issue](https://github.com/duskmoth-dev/duskmoth-sdk/issues),
+or contact hello@duskmoth.xyz. Official X: [@duskmoth_app](https://x.com/duskmoth_app).

@@ -1,9 +1,9 @@
 {
   "name": "@duskmoth-dev/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
-  "description": "Dependency-free Duskmoth API client. Does not sign or submit transactions.",
+  "description": "Dependency-free Duskmoth HTTP client with Moth Pass, AI Pack, and Payroll authorization. No wallet signing or transaction broadcasting.",
   "license": "MIT",
   "author": {
     "name": "Duskmoth",
@@ -34,6 +34,9 @@
     "README.md",
     "LICENSE",
     "SECURITY.md",
-    "CONTRIBUTING.md"
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "docs",
+    "examples"
   ]
 }
