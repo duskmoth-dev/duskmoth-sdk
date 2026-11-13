@@ -1,5 +1,7 @@
 # Duskmoth SDK
 
+[![CI](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml)
+
 Dependency-free JavaScript/TypeScript HTTP client for Duskmoth on Solana.
 Version **0.2.0** adds Moth Pass issuance/redemption, AI Pack plans, and Private Payroll authorization.
 
