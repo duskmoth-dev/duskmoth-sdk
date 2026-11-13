@@ -1,0 +1,77 @@
+name: npm publish
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing published GitHub release tag
+        required: true
+        default: v0.2.1
+        type: string
+      publish:
+        description: Publish to npm after owner setup
+        required: true
+        default: false
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: npm-${{ inputs.release_tag }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.repository == 'duskmoth-dev/duskmoth-sdk' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_tag }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: node scripts/verify-release.mjs
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          GH_TOKEN: ${{ github.token }}
+      - run: npm test
+      - run: npm run check:package
+      - run: npm pack --ignore-scripts
+  publish:
+    if: inputs.publish
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.release_tag }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Verify owner setup and npm version
+        env:
+          READY: ${{ vars.NPM_TRUSTED_PUBLISHING_READY }}
+        run: |
+          test "$READY" = true || { echo "Configure the npm package trusted publisher first. See docs/publishing.md."; exit 1; }
+          node -e "const v=require('child_process').execFileSync('npm',['--version'],{encoding:'utf8'}).trim().split('.').map(Number);if(v[0]<11||(v[0]===11&&(v[1]<5||(v[1]===5&&v[2]<1))))process.exit(1)"
+      - run: node scripts/verify-release.mjs
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          GH_TOKEN: ${{ github.token }}
+      - run: npm test
+      - run: npm run check:package
+      - name: Pack and publish verified archive
+        run: |
+          ARCHIVE=$(npm pack --ignore-scripts --silent)
+          npm publish "$ARCHIVE" --access public --provenance --ignore-scripts

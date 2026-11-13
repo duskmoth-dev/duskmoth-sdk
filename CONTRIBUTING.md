@@ -4,7 +4,7 @@ Thank you for contributing. Contact: hello@duskmoth.xyz.
 
 1. Open an issue describing a reproducible bug or a narrowly scoped proposal.
 2. Fork the repository and create a descriptive branch.
-3. Add regression tests and run `npm test` before submitting a pull request.
+3. Add regression tests and run `npm test` and `npm run check:package` before submitting a pull request.
 4. Describe the behavior change, test results, and any remaining limitations.
 
 ## Safety requirements
@@ -19,3 +19,15 @@ Thank you for contributing. Contact: hello@duskmoth.xyz.
 Use real commits with an accurate author identity. Do not backdate commits, fabricate contributors, or generate contribution activity.
 
 By submitting code, you agree to license your original contribution under this repository's MIT license.
+
+## Where to start
+
+- Use [Discussions](https://github.com/duskmoth-dev/duskmoth-sdk/discussions) for integration questions.
+- Pick an open `good first issue` or `help wanted` item and discuss your scope before starting.
+- Keep examples import-safe and use offline fixtures. Read-only examples must not consume passes.
+- Preserve zero runtime dependencies unless a concrete need and security review justify a change.
+- Keep CI actions pinned to reviewed commit hashes; dependency updates are proposals, not automatic merges.
+- Follow [publishing instructions](docs/publishing.md); maintainers own releases and npm access.
+
+Useful upstream contributions require an actual reproducible issue, a focused change, and regression
+tests. Do not create empty forks, duplicate listing requests, fabricated bugs, or activity-only PRs.

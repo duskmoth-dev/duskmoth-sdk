@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.1
+
+- Add runnable offline, availability, and explicit-opt-in sanctions examples.
+- Test example requests and unavailable responses using offline fixtures.
+- Verify the npm tarball allowlist and retain zero runtime/development dependencies.
+- Add a manual npm trusted-publishing workflow with release/tag verification and provenance.
+- Add Node.js 22/24 CI, dependency review, Dependabot, and OpenSSF Scorecard workflows.
+- Document owner-controlled npm bootstrap, contributor tasks, and private security reporting.
+
+No wallet signing, payment execution, new privacy guarantee, or automatic mainnet action is added.
+GitHub release availability does not establish npm registry publication.
+
 ## 0.2.0
 
 - Add Moth Pass configuration, existing-burn issuance, and split-withdraw redemption HTTP methods.

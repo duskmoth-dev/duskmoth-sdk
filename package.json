@@ -1,6 +1,6 @@
 {
   "name": "@duskmoth-dev/sdk",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "private": false,
   "description": "Dependency-free Duskmoth HTTP client with Moth Pass, AI Pack, and Payroll authorization. No wallet signing or transaction broadcasting.",
@@ -21,7 +21,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "check:package": "node scripts/check-package.mjs",
+    "example:status": "node examples/status.mjs",
+    "example:screen": "node examples/screen.mjs",
+    "prepublishOnly": "npm test && npm run check:package"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "exports": {
     ".": {
