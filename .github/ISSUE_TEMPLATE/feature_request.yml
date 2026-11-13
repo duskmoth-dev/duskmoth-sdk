@@ -1,0 +1,17 @@
+name: Integration proposal
+description: Propose a concrete improvement with a reproducible use case.
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: User or developer problem
+      description: Explain the actual problem. Never include keys, bearer proofs, or private payment data.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scope and acceptance checks
+      description: Separate HTTP authorization from wallet signing and payment execution.
+    validations:
+      required: true

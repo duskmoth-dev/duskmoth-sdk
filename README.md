@@ -3,7 +3,8 @@
 [![CI](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml)
 
 Dependency-free JavaScript/TypeScript HTTP client for Duskmoth on Solana.
-Version **0.2.0** adds Moth Pass issuance/redemption, AI Pack plans, and Private Payroll authorization.
+Version **0.2.1** adds runnable integration examples, package verification, and a tokenless publishing workflow.
+Moth Pass issuance/redemption, AI Pack plans, and Payroll authorization remain available.
 
 This is **not** a cryptographic SDK, a Privacy Cash replacement, or a wallet-signing library.
 It never burns tokens, signs messages, deposits, withdraws, broadcasts transactions, or executes payroll.
@@ -11,16 +12,32 @@ However, its premium POST methods **can consume existing Moth Passes**. Use them
 
 ## Install from GitHub Releases
 
-Download `duskmoth-dev-sdk-0.2.0.tgz` and `duskmoth-sdk-0.2.0-SHA256SUMS.txt` from
-[v0.2.0](https://github.com/duskmoth-dev/duskmoth-sdk/releases/tag/v0.2.0).
+Download `duskmoth-dev-sdk-0.2.1.tgz` and `duskmoth-sdk-0.2.1-SHA256SUMS.txt` from
+[v0.2.1](https://github.com/duskmoth-dev/duskmoth-sdk/releases/tag/v0.2.1).
 Verify the archive before installing:
 
 ```sh
-sha256sum --ignore-missing -c duskmoth-sdk-0.2.0-SHA256SUMS.txt
-npm install ./duskmoth-dev-sdk-0.2.0.tgz
+sha256sum --ignore-missing -c duskmoth-sdk-0.2.1-SHA256SUMS.txt
+npm install ./duskmoth-dev-sdk-0.2.1.tgz
 ```
 
-No npm registry publication is claimed. Requires Node.js 22+ or a modern browser with fetch and AbortSignal.timeout.
+The release archive can be installed now. npm publication requires owner setup;
+the publishing workflow alone does not mean the package is on npm.
+See [publishing and verification](docs/publishing.md).
+Requires Node.js 22+ or a modern browser with fetch and AbortSignal.timeout.
+
+## Try the examples
+
+```sh
+git clone https://github.com/duskmoth-dev/duskmoth-sdk.git
+cd duskmoth-sdk
+node examples/offline.mjs
+npm test
+npm run check:package
+```
+
+The default demo is offline and needs no wallet or credentials.
+See [all examples and their effects](examples/README.md).
 
 ## Read configuration
 
@@ -105,6 +122,12 @@ Raw provider response bodies are not attached to errors. The client does not log
 It **never automatically retries** a request. A timeout, invalid JSON or disconnected response does not prove a pass was unspent.
 
 ## Development and limits
+
+Join [Discussions](https://github.com/duskmoth-dev/duskmoth-sdk/discussions) for integration questions,
+or choose a [good first issue](https://github.com/duskmoth-dev/duskmoth-sdk/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22).
+See [contribution requirements](CONTRIBUTING.md).
+CI tests Node.js 22 and 24 and checks the package allowlist. Dependency review checks pull requests;
+Dependabot monitors action updates. OpenSSF Scorecard reviews repository practices, not payment privacy.
 
 `npm test` uses unfunded, offline fixtures. Tests do not establish funded mainnet operation or an independent security audit.
 TypeScript declarations cover the premium contracts; existing basic methods retain their unknown response type.
