@@ -3,7 +3,7 @@
 [![CI](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/duskmoth-dev/duskmoth-sdk/actions/workflows/ci.yml)
 
 Dependency-free JavaScript/TypeScript HTTP client for Duskmoth on Solana.
-Version **0.2.1** adds runnable integration examples, package verification, and a tokenless publishing workflow.
+Version **0.2.2** adds typed read-only configuration responses and an offline same-origin browser example.
 Moth Pass issuance/redemption, AI Pack plans, and Payroll authorization remain available.
 
 This is **not** a cryptographic SDK, a Privacy Cash replacement, or a wallet-signing library.
@@ -12,17 +12,17 @@ However, its premium POST methods **can consume existing Moth Passes**. Use them
 
 ## Install from GitHub Releases
 
-Download `duskmoth-dev-sdk-0.2.1.tgz` and `duskmoth-sdk-0.2.1-SHA256SUMS.txt` from
-[v0.2.1](https://github.com/duskmoth-dev/duskmoth-sdk/releases/tag/v0.2.1).
+Download `duskmoth-dev-sdk-0.2.2.tgz` and `duskmoth-sdk-0.2.2-SHA256SUMS.txt` from
+[v0.2.2](https://github.com/duskmoth-dev/duskmoth-sdk/releases/tag/v0.2.2).
 Verify the archive before installing:
 
 ```sh
-sha256sum --ignore-missing -c duskmoth-sdk-0.2.1-SHA256SUMS.txt
-npm install ./duskmoth-dev-sdk-0.2.1.tgz
+sha256sum --ignore-missing -c duskmoth-sdk-0.2.2-SHA256SUMS.txt
+npm install ./duskmoth-dev-sdk-0.2.2.tgz
 ```
 
-The release archive can be installed now. npm publication requires owner setup;
-the publishing workflow alone does not mean the package is on npm.
+Distribution is through GitHub Releases only; this update does not publish to npm.
+The publishing workflow alone does not mean the package is on npm.
 See [publishing and verification](docs/publishing.md).
 Requires Node.js 22+ or a modern browser with fetch and AbortSignal.timeout.
 
@@ -50,6 +50,25 @@ const issuer = await client.passInfo();
 // Read issuer.enabled, issuer.reason, issuer.price, and issuer.features.
 // Availability is not a pass balance or proof of a completed payment.
 ```
+
+`config()`, `health()` and `relayerConfig()` return `ConfigResponse`, `HealthResponse`
+and `RelayerConfigResponse`. Public status fields are optional and read-only to support
+partial/older deployments; unknown extension fields remain `unknown`.
+Check `configuration.liveSend === true` rather than assuming missing means ready.
+These declarations describe JSON; they do not validate responses at runtime or probe
+upstream provider health. Relayer configuration is not a transaction-specific fee quote.
+
+## Offline browser example
+
+```sh
+npm run example:browser
+# Open http://127.0.0.1:8788/ and choose a simulated service state.
+```
+
+The built-in, loopback-only Node server hosts both the page and synthetic API responses.
+It demonstrates available flags, disabled services, missing fields, HTTP 503 and invalid
+JSON. No external API, wallet, credentials, pass spending or payment is involved.
+No dependency installation is required. See [browser setup and limitations](examples/browser/README.md).
 
 HTTPS is required except for localhost. An optional base-path prefix is supported.
 Browser access depends on the server's actual CORS policy; the SDK does not bypass it.
@@ -130,7 +149,8 @@ CI tests Node.js 22 and 24 and checks the package allowlist. Dependency review c
 Dependabot monitors action updates. OpenSSF Scorecard reviews repository practices, not payment privacy.
 
 `npm test` uses unfunded, offline fixtures. Tests do not establish funded mainnet operation or an independent security audit.
-TypeScript declarations cover the premium contracts; existing basic methods retain their unknown response type.
+TypeScript declarations cover premium contracts and read-only health/configuration responses.
+Other basic data methods retain their unknown response type.
 
 Private transactions do not guarantee anonymity. Scorechain sanctions checks are not full AML screening.
 Use [Duskmoth](https://duskmoth.xyz), [report an issue](https://github.com/duskmoth-dev/duskmoth-sdk/issues),

@@ -6,13 +6,16 @@ No example contains a key, signs a transaction, or transfers funds.
 | Example | Run | Effect |
 | --- | --- | --- |
 | Offline demonstration | `node examples/offline.mjs` | Uses local fixtures; no network |
+| Offline browser | `npm run example:browser` | Serves a loopback-only page and fixture API; no external network |
 | Service availability | `npm run example:status` | Reads health and pass configuration |
 | Sanctions screening | `node examples/screen.mjs PUBLIC_ADDRESS --allow-address-screening` | Sends the chosen address to the service and screening provider |
 | Premium helpers | Import `examples/premium.mjs` | No action on import; explicit calls can consume a pass |
 
 Set `DUSKMOTH_BASE_URL` to an HTTPS instance you trust, or a localhost test server.
 This is a public service URL, **not an API key**. Never place provider credentials in it.
-The CLI examples are for Node.js. Browser usage additionally depends on the host's CORS policy.
+The CLI examples are for Node.js. The [browser demo](browser/README.md) serves synthetic
+responses and the page from one loopback origin. Production browser usage still depends
+on the actual host's CORS policy; this demo does not change it.
 
 ## Premium operations
 

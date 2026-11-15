@@ -17,7 +17,10 @@ const [pack] = JSON.parse(execFileSync('npm', ['pack', '--dry-run', '--ignore-sc
 }));
 const required = ['src/index.js', 'src/index.d.ts', 'src/validation.js', 'LICENSE',
   'README.md', 'SECURITY.md', 'examples/offline.mjs', 'examples/status.mjs',
-  'examples/screen.mjs', 'examples/premium.mjs', 'docs/publishing.md'];
+  'examples/screen.mjs', 'examples/premium.mjs', 'docs/publishing.md',
+  'examples/browser/index.html', 'examples/browser/server.mjs',
+  'examples/browser/demo.mjs', 'examples/browser/model.mjs',
+  'examples/browser/fixtures.mjs', 'examples/browser/style.css'];
 const files = new Set(pack.files.map(file => file.path));
 for (const file of required) assert.ok(files.has(file), `Missing packaged file: ${file}`);
 for (const file of files) {
