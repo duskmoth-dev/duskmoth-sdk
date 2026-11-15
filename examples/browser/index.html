@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Local-only Duskmoth SDK availability example with synthetic fixtures. No wallets or payments.">
+  <title>Duskmoth SDK · Offline browser example</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/examples/browser/demo.mjs"></script>
+</head>
+<body>
+  <main>
+    <p class="badge">OFFLINE FIXTURES · NOT A MAINNET DEMO</p>
+    <h1>Read availability with Duskmoth SDK</h1>
+    <p>This page and its simulated API share one localhost origin. No external API,
+      wallet, credentials, pass spending, storage, or blockchain activity is used.</p>
+    <form>
+      <label for="scenario">Simulated service state</label>
+      <select id="scenario">
+        <option value="ready">Available flags — simulated only</option>
+        <option value="disabled">Disabled services</option>
+        <option value="partial">Missing fields — unknown availability</option>
+        <option value="unavailable">HTTP 503 — service unavailable</option>
+        <option value="invalid-json">Invalid JSON response</option>
+      </select>
+      <button type="submit">Read local fixtures</button>
+    </form>
+    <p id="notice" role="status">Choose a scenario, then read its local fixtures.</p>
+    <ul id="results" aria-label="Simulated endpoint availability" aria-busy="false"></ul>
+    <h2>What this demonstrates</h2>
+    <p>Read-only health, configuration, and pass availability. Even an available
+      flag does not prove that a payment will succeed. A missing field means
+      unknown, not ready.</p>
+    <h2>Same origin, not a CORS bypass</h2>
+    <p>No CORS permission is needed here because all requests stay on this local
+      server. A real cross-origin integration still needs the API operator's
+      explicit CORS policy or your own same-origin backend.</p>
+  </main>
+</body>
+</html>

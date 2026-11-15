@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2
+
+- Type read-only health, service configuration, relayer configuration and pass
+  token metadata; retain optional/unknown fields for partial deployments.
+- Add a same-origin browser example with a loopback-only, dependency-free Node
+  fixture server and available/disabled/missing/HTTP 503/invalid-JSON scenarios.
+- Add local HTTP and controller regression tests and expanded TypeScript fixtures.
+- Include all browser files in package verification.
+
+No SDK request behavior, production CORS, wallet signing, pass costs or payment
+execution is changed. The browser example uses synthetic data only.
+
 ## 0.2.1
 
 - Add runnable offline, availability, and explicit-opt-in sanctions examples.
